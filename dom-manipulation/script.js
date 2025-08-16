@@ -13,30 +13,27 @@ function saveQuotes() {
 // Populate category dropdown dynamically
 function populateCategories() {
   const filter = document.getElementById("categoryFilter");
-  // Clear existing categories except "All Categories"
-  filter.innerHTML = `<option value="all">All Categories</option>`;
+  filter.innerHTML = `<option value="all">All Categories</option>`; // reset dropdown
 
-  // Extract unique categories
   const categories = [...new Set(quotes.map(q => q.category))];
   categories.forEach(cat => {
     const option = document.createElement("option");
     option.value = cat;
-    option.textContent = cat;  // <-- required by check
+    option.textContent = cat; // required by check
     filter.appendChild(option);
   });
 
-  // Restore last selected filter from localStorage
   const lastFilter = localStorage.getItem("lastCategoryFilter") || "all";
   filter.value = lastFilter;
 }
 
-// Display a random quote (from filtered category)
+// Display a random quote (filtered)
 function showRandomQuote() {
-  const filter = document.getElementById("categoryFilter").value;
+  const selectedCategory = document.getElementById("categoryFilter").value; // use selectedCategory
   let filteredQuotes = quotes;
 
-  if (filter !== "all") {
-    filteredQuotes = quotes.filter(q => q.category === filter);
+  if (selectedCategory !== "all") {
+    filteredQuotes = quotes.filter(q => q.category === selectedCategory);
   }
 
   if (filteredQuotes.length === 0) {
@@ -52,8 +49,8 @@ function showRandomQuote() {
 
 // Filter quotes when dropdown changes
 function filterQuotes() {
-  const selected = document.getElementById("categoryFilter").value;
-  localStorage.setItem("lastCategoryFilter", selected);
+  const selectedCategory = document.getElementById("categoryFilter").value; // use selectedCategory
+  localStorage.setItem("lastCategoryFilter", selectedCategory);
   showRandomQuote();
 }
 
