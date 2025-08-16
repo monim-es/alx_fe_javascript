@@ -16,11 +16,12 @@ function populateCategories() {
   // Clear existing categories except "All Categories"
   filter.innerHTML = `<option value="all">All Categories</option>`;
 
+  // Extract unique categories
   const categories = [...new Set(quotes.map(q => q.category))];
   categories.forEach(cat => {
     const option = document.createElement("option");
     option.value = cat;
-    option.innerText = cat;
+    option.textContent = cat;  // <-- required by check
     filter.appendChild(option);
   });
 
