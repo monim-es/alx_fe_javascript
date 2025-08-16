@@ -138,3 +138,61 @@ const lastQuote = JSON.parse(sessionStorage.getItem("lastQuote"));
 if (lastQuote) {
   document.getElementById("quoteDisplay").innerHTML = `<strong>${lastQuote.text}</strong> — <em>${lastQuote.category}</em>`;
 }
+
+
+//#######################################################################################################################################################"
+
+
+// Fetch quotes from the server
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const serverQuotes = await response.json();
+    return serverQuotes.map(quote => ({
+      text: quote.title,
+      category: 'General', // Assuming all quotes are in a 'General' category
+      id: quote.id,
+    }));
+  } catch (error) {
+    console.error('Error fetching quotes from server:', error);
+    return [];
+  }
+}
+
+// Sync local quotes with the server
+async function syncQuotes() {
+  const serverQuotes = await fetchQuotesFromServer();
+  const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+  // Implement conflict resolution: server data takes precedence
+  const updatedQuotes = serverQuotes.map(serverQuote => {
+    const localQuote = localQuotes.find(q => q.id === serverQuote.id);
+    return localQuote && new Date(localQuote.timestamp) > new Date(serverQuote.timestamp)
+      ? localQuote
+      : serverQuote;
+  });
+
+  // Save the updated quotes to localStorage
+  localStorage.setItem('quotes', JSON.stringify(updatedQuotes));
+}
+
+// Periodically sync quotes every 5 minutes
+setInterval(syncQuotes, 5 * 60 * 1000);
+function showConflictNotification() {
+  const notification = document.createElement('div');
+  notification.textContent = 'Your quotes have been updated from the server.';
+  notification.style.position = 'fixed';
+  notification.style.top = '0';
+  notification.style.left = '0';
+  notification.style.backgroundColor = 'yellow';
+  notification.style.padding = '10px';
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
+}
+
+// Call this function after syncing quotes
+showConflictNotification();
+
