@@ -1,4 +1,4 @@
-// Load quotes from localStorage or initialize default quotes
+// Load quotes from localStorage or initialize defaults
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   { text: "The journey of a thousand miles begins with one step.", category: "Motivation" },
   { text: "Happiness depends upon ourselves.", category: "Happiness" },
@@ -10,36 +10,66 @@ function saveQuotes() {
   localStorage.setItem("quotes", JSON.stringify(quotes));
 }
 
-// Display a random quote
+// Populate category dropdown dynamically
+function populateCategories() {
+  const filter = document.getElementById("categoryFilter");
+  // Clear existing categories except "All Categories"
+  filter.innerHTML = `<option value="all">All Categories</option>`;
+
+  const categories = [...new Set(quotes.map(q => q.category))];
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.innerText = cat;
+    filter.appendChild(option);
+  });
+
+  // Restore last selected filter from localStorage
+  const lastFilter = localStorage.getItem("lastCategoryFilter") || "all";
+  filter.value = lastFilter;
+}
+
+// Display a random quote (from filtered category)
 function showRandomQuote() {
-  if (quotes.length === 0) {
-    document.getElementById("quoteDisplay").innerHTML = "No quotes available!";
+  const filter = document.getElementById("categoryFilter").value;
+  let filteredQuotes = quotes;
+
+  if (filter !== "all") {
+    filteredQuotes = quotes.filter(q => q.category === filter);
+  }
+
+  if (filteredQuotes.length === 0) {
+    document.getElementById("quoteDisplay").innerHTML = "No quotes available in this category!";
     return;
   }
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
+
+  const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+  const quote = filteredQuotes[randomIndex];
   document.getElementById("quoteDisplay").innerHTML = `<strong>${quote.text}</strong> — <em>${quote.category}</em>`;
-  // Save last viewed quote in sessionStorage
   sessionStorage.setItem("lastQuote", JSON.stringify(quote));
+}
+
+// Filter quotes when dropdown changes
+function filterQuotes() {
+  const selected = document.getElementById("categoryFilter").value;
+  localStorage.setItem("lastCategoryFilter", selected);
+  showRandomQuote();
 }
 
 // Create form to add a new quote
 function createAddQuoteForm() {
   const formContainer = document.createElement("div");
 
-  // Input for quote text
   const quoteInput = document.createElement("input");
   quoteInput.type = "text";
   quoteInput.placeholder = "Enter a new quote";
   quoteInput.id = "newQuoteText";
 
-  // Input for quote category
   const categoryInput = document.createElement("input");
   categoryInput.type = "text";
   categoryInput.placeholder = "Enter quote category";
   categoryInput.id = "newQuoteCategory";
 
-  // Add button
   const addButton = document.createElement("button");
   addButton.innerText = "Add Quote";
   addButton.addEventListener("click", function() {
@@ -52,8 +82,10 @@ function createAddQuoteForm() {
     }
 
     quotes.push({ text, category });
-    saveQuotes();         // save to localStorage
-    showRandomQuote();    // display the new quote
+    saveQuotes();
+    populateCategories();  // update dropdown if new category
+    showRandomQuote();
+
     quoteInput.value = "";
     categoryInput.value = "";
   });
@@ -86,6 +118,7 @@ function importFromJsonFile(event) {
       if (Array.isArray(importedQuotes)) {
         quotes.push(...importedQuotes);
         saveQuotes();
+        populateCategories();
         alert("Quotes imported successfully!");
       } else {
         alert("Invalid JSON format!");
@@ -100,8 +133,9 @@ function importFromJsonFile(event) {
 // Initialize
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 createAddQuoteForm();
+populateCategories();
 
-// Display last viewed quote from sessionStorage
+// Show last viewed quote if exists
 const lastQuote = JSON.parse(sessionStorage.getItem("lastQuote"));
 if (lastQuote) {
   document.getElementById("quoteDisplay").innerHTML = `<strong>${lastQuote.text}</strong> — <em>${lastQuote.category}</em>`;
