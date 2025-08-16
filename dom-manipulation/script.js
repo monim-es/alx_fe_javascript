@@ -6,7 +6,7 @@ let quotes = [
 ];
 
 // Display a random quote
-function displayRandomQuote() {
+function showRandomQuote() {
   if (quotes.length === 0) {
     document.getElementById("quoteDisplay").innerHTML = "No quotes available!";
     return;
@@ -34,7 +34,7 @@ function addQuote() {
   quotes.push({ text, category });
 
   // Update DOM to show the newly added quote immediately
-  displayRandomQuote();
+  showRandomQuote();
 
   // Clear input fields
   textInput.value = "";
@@ -42,7 +42,7 @@ function addQuote() {
 }
 
 // Event listener for "Show New Quote" button
-document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 // Event listener for "Add Quote" button
 document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
