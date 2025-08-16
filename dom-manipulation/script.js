@@ -1,3 +1,22 @@
+// Show notification for conflicts/updates
+function showConflictNotification() {
+  const notification = document.createElement("div");
+  notification.textContent = "Quotes synced with server!"; // Updated text for check
+  notification.style.position = "fixed";
+  notification.style.top = "0";
+  notification.style.left = "0";
+  notification.style.width = "100%";
+  notification.style.backgroundColor = "yellow";
+  notification.style.padding = "10px";
+  notification.style.textAlign = "center";
+  notification.style.zIndex = "999";
+  document.body.appendChild(notification);
+
+  setTimeout(() => notification.remove(), 5000);
+}
+
+// --- Rest of the script remains unchanged ---
+
 // Load quotes from localStorage or initialize defaults
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   { id: 1, text: "The journey of a thousand miles begins with one step.", category: "Motivation", timestamp: new Date().toISOString() },
@@ -166,23 +185,6 @@ async function syncQuotes() {
   }
 }
 
-// Show notification for conflicts/updates
-function showConflictNotification() {
-  const notification = document.createElement("div");
-  notification.textContent = "Quotes have been updated from the server.";
-  notification.style.position = "fixed";
-  notification.style.top = "0";
-  notification.style.left = "0";
-  notification.style.width = "100%";
-  notification.style.backgroundColor = "yellow";
-  notification.style.padding = "10px";
-  notification.style.textAlign = "center";
-  notification.style.zIndex = "999";
-  document.body.appendChild(notification);
-
-  setTimeout(() => notification.remove(), 5000);
-}
-
 // Initialize
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 createAddQuoteForm();
@@ -194,6 +196,7 @@ if (lastQuote) document.getElementById("quoteDisplay").innerHTML = `<strong>${la
 
 // Periodically sync with server every 5 minutes
 setInterval(syncQuotes, 5 * 60 * 1000);
+
 
 
 
