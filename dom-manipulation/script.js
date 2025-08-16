@@ -5,15 +5,16 @@ let quotes = [
   { text: "Do what you can, with what you have, where you are.", category: "Inspiration" }
 ];
 
-// Show a random quote
-function showRandomQuote() {
+// Display a random quote
+function displayRandomQuote() {
   if (quotes.length === 0) {
-    document.getElementById("quoteDisplay").innerText = "No quotes available!";
+    document.getElementById("quoteDisplay").innerHTML = "No quotes available!";
     return;
   }
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
-  document.getElementById("quoteDisplay").innerText = `"${quote.text}" — ${quote.category}`;
+  // Update DOM using innerHTML
+  document.getElementById("quoteDisplay").innerHTML = `<strong>${quote.text}</strong> — <em>${quote.category}</em>`;
 }
 
 // Add a new quote
@@ -29,14 +30,19 @@ function addQuote() {
     return;
   }
 
+  // Add to quotes array
   quotes.push({ text, category });
 
+  // Update DOM to show the newly added quote immediately
+  displayRandomQuote();
+
+  // Clear input fields
   textInput.value = "";
   categoryInput.value = "";
-
-  alert("Quote added!");
 }
 
-// Event listeners
-document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+// Event listener for "Show New Quote" button
+document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+
+// Event listener for "Add Quote" button
 document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
